@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MisoPretty's Quant Desk — Retro Desktop</title>
+  <style>
+    :root{
+      --bg:#cfcfd4;
+      --bg2:#d9d9de;
+      --line:#111;
+      --panel:#efeff2;
+      --panel2:#f5f5f7;
+      --text:#151515;
+      --pink:#ff4fd8;
+      --blue:#4fd8ff;
+      --green:#64ff7a;
+      --yellow:#ffe766;
+      --orange:#ff9b4f;
+      --lav:#b489ff;
+      --shadow:4px 4px 0 rgba(0,0,0,.95);
+      --titleH:30px;
+      --radius:10px;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --ui: Inter, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;overflow:hidden;font-family:var(--ui);color:var(--text)}
+    body{
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.55), transparent 20%),
+        radial-gradient(circle at 80% 30%, rgba(79,216,255,.08), transparent 18%),
+        radial-gradient(circle at 70% 70%, rgba(255,79,216,.08), transparent 20%),
+        linear-gradient(180deg,var(--bg2),var(--bg));
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+      background-image:
+        radial-gradient(#9d9da4 1.1px, transparent 1.1px),
+        linear-gradient(rgba(255,255,255,.35), rgba(255,255,255,0));
+      background-size:12px 12px, 100% 100%;
+      mix-blend-mode:multiply;
+    }
+    .desktop{position:relative;width:100vw;height:100vh;overflow:hidden;padding:12px 12px 70px}
+    .top-strip{
+      position:fixed;left:10px;right:10px;top:8px;height:34px;z-index:12000;
+      background:#ececf0;border:2px solid var(--line);box-shadow:var(--shadow);
+      display:flex;align-items:center;justify-content:space-between;padding:4px 10px;
+      font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .brand-dot{width:14px;height:14px;border:2px solid var(--line);background:linear-gradient(135deg,var(--yellow),var(--pink),var(--blue));}
+    .top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .desk-btn,button,input,select{font:inherit}
+    .desk-btn{
+      border:2px solid var(--line);background:#f8f8fa;padding:6px 10px;cursor:pointer;
+      box-shadow:2px 2px 0 rgba(0,0,0,.95);font-weight:800;
+    }
+    .desk-btn:hover{transform:translate(-1px,-1px)}
+    .desk-btn.pink{background:var(--pink)}
+    .desk-btn.blue{background:var(--blue)}
+    .desk-btn.green{background:var(--green)}
+    .desk-btn.yellow{background:var(--yellow)}
+    .taskbar{
+      position:fixed;left:10px;right:10px;bottom:8px;height:44px;z-index:12000;
+      background:#ececf0;border:2px solid var(--line);box-shadow:var(--shadow);
+      display:flex;align-items:center;justify-content:space-between;padding:4px 8px;gap:10px;
+      font-family:var(--mono);font-size:12px
+    }
+    .task-left,.task-right{display:flex;align-items:center;gap:8px;min-width:0}
+    .pill{border:2px solid var(--line);padding:4px 8px;background:#fff;white-space:nowrap}
+    .ticker{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+    .window{
+      position:absolute;background:rgba(243,243,247,.98);border:2px solid var(--line);
+      box-shadow:var(--shadow);min-width:280px;min-height:180px;display:flex;flex-direction:column;
+      overflow:hidden;
+    }
+    .window.hidden{display:none}
+    .titlebar{
+      height:var(--titleH);border-bottom:2px solid var(--line);cursor:move;user-select:none;
+      display:flex;align-items:center;justify-content:space-between;padding:0 6px 0 8px;
+      background:linear-gradient(90deg,#fff7a3 0%,#ffd0ef 44%,#c9f4ff 100%);
+      font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:900;
+    }
+    .title-left{display:flex;align-items:center;gap:8px;min-width:0}
+    .win-icon{width:14px;height:14px;border:2px solid var(--line);background:linear-gradient(135deg,var(--blue),var(--pink),var(--yellow));}
+    .title-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .controls{display:flex;gap:6px}
+    .ctrl{width:18px;height:18px;border:2px solid var(--line);background:#f6f6f8;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;line-height:1}
+    .content{flex:1;overflow:auto;padding:10px;background:linear-gradient(180deg,rgba(255,255,255,.55), rgba(255,255,255,.15));}
+    .grid{display:grid;gap:10px}
+    .grid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .panel{border:2px solid var(--line);background:#fcfcfd;padding:10px}
+    .panel h3,.panel h4{margin:0 0 8px;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em}
+    .stat{display:flex;flex-direction:column;gap:4px;border:2px solid var(--line);padding:8px;background:#fff}
+    .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#333}
+    .big{font-size:24px;font-weight:900}
+    .pink{color:var(--pink)} .blue{color:#0086b8} .green{color:#0b7d27} .yellow{color:#7f5f00} .lav{color:#6a2aff}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{border:1px solid #333;padding:6px;text-align:left}
+    th{background:#efeff6;font-family:var(--mono);text-transform:uppercase;font-size:11px}
+    .list{display:flex;flex-direction:column;gap:6px}
+    .row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+    .row>div:first-child{min-width:0}
+    input,select{
+      width:100%;border:2px solid var(--line);background:#fff;padding:7px 8px;outline:none
+    }
+    .inline{display:flex;gap:8px;align-items:center}
+    .inline>*{flex:1}
+    .tiny{font-size:11px;color:#333}
+    .feed{
+      font-family:var(--mono);font-size:11px;line-height:1.35;background:#101014;color:#98ff98;
+      border:2px solid var(--line);padding:8px;height:100%;overflow:auto
+    }
+    .feed .error{color:#ff9ca8}
+    .feed .action{color:#8be7ff}
+    .feed .user{color:#ffe888}
+    .feed .ok{color:#a4ffb5}
+    .sparkbar{height:10px;background:#d7d7de;border:1px solid #222;position:relative}
+    .sparkbar>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--pink),var(--blue));}
+    canvas{width:100%;display:block;background:#fff;border:2px solid var(--line)}
+    .window-note{font-size:11px;font-family:var(--mono);color:#444;margin-top:8px}
+    .tag{display:inline-block;padding:4px 7px;border:2px solid var(--line);background:#fff;font-size:11px;font-family:var(--mono);margin-right:6px;margin-bottom:6px}
+    .desktop-mini{
+      position:absolute;border:2px solid var(--line);background:rgba(255,255,255,.55);box-shadow:2px 2px 0 rgba(0,0,0,.75);padding:6px;font-family:var(--mono);font-size:11px;z-index:5
+    }
+    .mini-orbit{width:120px;height:120px;border-radius:50%;border:2px solid var(--line);background:radial-gradient(circle at 35% 35%, #fff8b0 0%, #ffc7ea 35%, #a5f1ff 68%, #fff 100%);position:absolute;filter:saturate(1.15)}
+    .mini-orbit::after{content:"";position:absolute;left:-12px;right:-12px;top:46px;height:22px;border:2px solid var(--line);border-radius:50%;transform:rotate(-20deg)}
+    .status-dot{width:10px;height:10px;border-radius:50%;border:1px solid #111;display:inline-block;margin-right:6px}
+    .okdot{background:#4dff6b}.coldot{background:#ffd23f}.reddot{background:#ff677a}
+    .mono{font-family:var(--mono)}
+    @media (max-width: 900px){
+      .window{min-width:240px}
+      .grid.cols2,.grid.cols3{grid-template-columns:1fr}
+      .top-strip{font-size:10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="top-strip">
+    <div class="brand"><span class="brand-dot"></span><span>MisoPretty's Quant Desk</span></div>
+    <div class="top-actions">
+      <button class="desk-btn yellow" id="resetBtn">Reset layout</button>
+      <button class="desk-btn blue" id="refreshBtn">Refresh feeds</button>
+      <div class="pill" id="connState">Live crypto + SEC feeds</div>
+    </div>
+  </div>
+
+  <div class="desktop" id="desktop">
+    <div class="desktop-mini" style="left:32px;top:62px;">db-db.quantdesk.mainpage / live</div>
+    <div class="desktop-mini" style="left:210px;top:110px;">all windows draggable</div>
+    <div class="desktop-mini" style="right:100px;top:120px;">reset restores original positions</div>
+    <div class="mini-orbit" style="right:120px;top:70px;opacity:.65"></div>
+
+    <section class="window" data-key="market" style="left:30px;top:90px;width:430px;height:330px;z-index:20;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Live Tape / Markets</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="grid cols2">
+          <div class="stat"><div class="label">BTC</div><div class="big pink" id="btcPrice">--</div><div class="tiny" id="btcChange">--</div></div>
+          <div class="stat"><div class="label">ETH</div><div class="big blue" id="ethPrice">--</div><div class="tiny" id="ethChange">--</div></div>
+          <div class="stat"><div class="label">SOL</div><div class="big lav" id="solPrice">--</div><div class="tiny" id="solChange">--</div></div>
+          <div class="stat"><div class="label">LINK</div><div class="big green" id="linkPrice">--</div><div class="tiny" id="linkChange">--</div></div>
+        </div>
+        <div class="panel" style="margin-top:10px">
+          <h3>Cross-asset watch</h3>
+          <table>
+            <thead><tr><th>Asset</th><th>Price</th><th>24h</th><th>Market cap</th></tr></thead>
+            <tbody id="marketRows"></tbody>
+          </table>
+          <div class="window-note">Real feed: CoinGecko public market API.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" data-key="chart" style="left:482px;top:90px;width:455px;height:360px;z-index:18;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Chart / Visualization</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="inline" style="margin-bottom:8px">
+          <select id="chartAsset"></select>
+          <select id="chartWindow">
+            <option value="1">1 day</option>
+            <option value="7" selected>7 days</option>
+            <option value="30">30 days</option>
+            <option value="90">90 days</option>
+          </select>
+          <button class="desk-btn pink" id="loadChartBtn">Load</button>
+        </div>
+        <canvas id="assetChart" width="800" height="220"></canvas>
+        <div class="grid cols3" style="margin-top:8px">
+          <div class="stat"><div class="label">Last</div><div class="big" id="chartLast">--</div></div>
+          <div class="stat"><div class="label">Range</div><div class="big" id="chartRange">--</div></div>
+          <div class="stat"><div class="label">Delta</div><div class="big" id="chartDelta">--</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" data-key="portfolio" style="left:952px;top:92px;width:370px;height:360px;z-index:17;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Capital / PnL</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="grid cols2">
+          <div class="stat"><div class="label">Account value</div><div class="big green" id="acctValue">$0.00</div></div>
+          <div class="stat"><div class="label">Unrealized PnL</div><div class="big" id="acctPnl">$0.00</div></div>
+        </div>
+        <canvas id="equityCurve" width="700" height="160" style="margin-top:10px"></canvas>
+        <div class="panel" style="margin-top:10px">
+          <h3>Live positions</h3>
+          <table>
+            <thead><tr><th>Asset</th><th>Qty</th><th>Avg</th><th>Now</th><th>PnL</th></tr></thead>
+            <tbody id="positionsRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" data-key="trade" style="left:40px;top:440px;width:430px;height:300px;z-index:16;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Paper Trade / Approval</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="grid cols2">
+          <div>
+            <div class="label">Asset</div>
+            <select id="tradeAsset"></select>
+          </div>
+          <div>
+            <div class="label">Side</div>
+            <select id="tradeSide"><option value="buy">Buy</option><option value="sell">Sell</option></select>
+          </div>
+          <div>
+            <div class="label">Quantity</div>
+            <input id="tradeQty" type="number" min="0" step="0.0001" value="0.1" />
+          </div>
+          <div>
+            <div class="label">Reason / Thesis</div>
+            <input id="tradeReason" type="text" placeholder="write thesis" />
+          </div>
+        </div>
+        <div class="inline" style="margin-top:10px">
+          <button class="desk-btn green" id="approveTradeBtn">Supervising quant approve</button>
+          <button class="desk-btn yellow" id="clearLogBtn">Clear activity</button>
+        </div>
+        <div class="panel" style="margin-top:10px">
+          <h3>Approval criteria</h3>
+          <div class="list mono tiny">
+            <div><span class="status-dot okdot"></span>real price available</div>
+            <div><span class="status-dot okdot"></span>quantity > 0</div>
+            <div><span class="status-dot coldot"></span>thesis present</div>
+            <div><span class="status-dot coldot"></span>position does not break inventory logic</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" data-key="activity" style="left:488px;top:468px;width:428px;height:275px;z-index:15;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Live Actions / Runtime</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content" style="padding:8px">
+        <div id="activityFeed" class="feed"></div>
+      </div>
+    </section>
+
+    <section class="window" data-key="io" style="left:934px;top:470px;width:392px;height:273px;z-index:14;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">Data Input / Output</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="grid cols2">
+          <div class="stat"><div class="label">Requests</div><div class="big" id="reqCount">0</div></div>
+          <div class="stat"><div class="label">Last latency</div><div class="big" id="latencyStat">--</div></div>
+          <div class="stat"><div class="label">Last source</div><div class="big" style="font-size:14px" id="lastSource">--</div></div>
+          <div class="stat"><div class="label">Last refresh</div><div class="big" style="font-size:14px" id="lastRefresh">--</div></div>
+        </div>
+        <div class="panel" style="margin-top:10px">
+          <h3>Feed health</h3>
+          <div class="row"><div>CoinGecko market feed</div><div class="mono" id="cgStatus">waiting</div></div>
+          <div class="sparkbar" style="margin:5px 0 10px"><span id="cgBar" style="width:0%"></span></div>
+          <div class="row"><div>SEC filing feed</div><div class="mono" id="secStatus">idle</div></div>
+          <div class="sparkbar" style="margin:5px 0 0"><span id="secBar" style="width:0%"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" data-key="sec" style="left:1338px;top:92px;width:340px;height:650px;z-index:13;">
+      <div class="titlebar"><div class="title-left"><span class="win-icon"></span><span class="title-text">SEC / Company Facts</span></div><div class="controls"><div class="ctrl" data-min>_</div></div></div>
+      <div class="content">
+        <div class="inline" style="margin-bottom:8px">
+          <input id="tickerInput" placeholder="ticker, e.g. AAPL" value="AAPL" />
+          <button class="desk-btn blue" id="lookupTickerBtn">Lookup</button>
+        </div>
+        <div class="panel">
+          <h3>Company</h3>
+          <div class="list tiny">
+            <div><strong>Name:</strong> <span id="secName">--</span></div>
+            <div><strong>CIK:</strong> <span id="secCik">--</span></div>
+            <div><strong>Exchange:</strong> <span id="secExchange">--</span></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:10px">
+          <h3>Recent filing metrics</h3>
+          <div class="list tiny" id="secFacts">No data loaded.</div>
+          <div class="window-note">Real source: SEC submissions and company facts JSON.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+(() => {
+  const desktop = document.getElementById('desktop');
+  const marketIds = ['bitcoin','ethereum','solana','chainlink','ripple','dogecoin'];
+  const marketMap = {
+    bitcoin:'BTC', ethereum:'ETH', solana:'SOL', chainlink:'LINK', ripple:'XRP', dogecoin:'DOGE'
+  };
+  const state = {
+    z: 20,
+    reqCount: 0,
+    lastLatency: null,
+    lastSource: '--',
+    lastRefresh: '--',
+    markets: {},
+    equityHistory: JSON.parse(localStorage.getItem('mp_qd_equity_history') || '[]'),
+    positions: JSON.parse(localStorage.getItem('mp_qd_positions') || '[]'),
+    layouts: {},
+    submissionsIndex: null,
+    selectedChart: 'bitcoin'
+  };
+
+  const defaultLayouts = {};
+  document.querySelectorAll('.window').forEach(win => {
+    defaultLayouts[win.dataset.key] = {
+      left: win.style.left, top: win.style.top, width: win.style.width, height: win.style.height
+    };
+  });
+
+  function savePositions(){
+    localStorage.setItem('mp_qd_positions', JSON.stringify(state.positions));
+    localStorage.setItem('mp_qd_equity_history', JSON.stringify(state.equityHistory.slice(-200)));
+  }
+
+  function fmtUSD(n){
+    if (n === null || n === undefined || Number.isNaN(Number(n))) return '--';
+    return Number(n).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2});
+  }
+  function fmtPct(n){
+    if (n === null || n === undefined || Number.isNaN(Number(n))) return '--';
+    const v = Number(n);
+    return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
+  }
+  function stamp(){
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  }
+
+  function log(msg, cls='action'){
+    const feed = document.getElementById('activityFeed');
+    const div = document.createElement('div');
+    div.className = cls;
+    div.textContent = `[${stamp()}] ${msg}`;
+    feed.prepend(div);
+  }
+
+  async function trackedFetch(url, source, options={}){
+    const t0 = performance.now();
+    state.reqCount += 1;
+    document.getElementById('reqCount').textContent = state.reqCount;
+    document.getElementById('lastSource').textContent = source;
+    state.lastSource = source;
+    try{
+      const res = await fetch(url, options);
+      const ms = Math.round(performance.now() - t0);
+      state.lastLatency = ms;
+      document.getElementById('latencyStat').textContent = `${ms} ms`;
+      document.getElementById('lastRefresh').textContent = stamp();
+      return res;
+    }catch(err){
+      const ms = Math.round(performance.now() - t0);
+      document.getElementById('latencyStat').textContent = `${ms} ms`;
+      throw err;
+    }
+  }
+
+  function setFeedStatus(key, text, pct){
+    if(key === 'cg'){
+      document.getElementById('cgStatus').textContent = text;
+      document.getElementById('cgBar').style.width = `${pct}%`;
+    } else if(key === 'sec'){
+      document.getElementById('secStatus').textContent = text;
+      document.getElementById('secBar').style.width = `${pct}%`;
+    }
+  }
+
+  async function refreshMarkets(){
+    setFeedStatus('cg', 'loading', 35);
+    log('Requesting CoinGecko market feed...', 'action');
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${marketIds.join(',')}&price_change_percentage=24h`;
+    try{
+      const res = await trackedFetch(url, 'CoinGecko markets');
+      const data = await res.json();
+      data.forEach(row => { state.markets[row.id] = row; });
+      renderMarket();
+      revaluePortfolio();
+      setFeedStatus('cg', 'healthy', 100);
+      log(`CoinGecko feed updated for ${data.length} assets.`, 'ok');
+    }catch(err){
+      setFeedStatus('cg', 'error', 100);
+      log(`CoinGecko feed failed: ${err.message}`, 'error');
+    }
+  }
+
+  function renderMarket(){
+    const ids = ['bitcoin','ethereum','solana','chainlink'];
+    ids.forEach(id => {
+      const row = state.markets[id];
+      if(!row) return;
+      const p = document.getElementById(marketMap[id].toLowerCase() + 'Price');
+      const c = document.getElementById(marketMap[id].toLowerCase() + 'Change');
+      if(p) p.textContent = fmtUSD(row.current_price);
+      if(c) {
+        c.textContent = fmtPct(row.price_change_percentage_24h);
+        c.style.color = row.price_change_percentage_24h >= 0 ? '#0b7d27' : '#d2163b';
+      }
+    });
+
+    const tbody = document.getElementById('marketRows');
+    tbody.innerHTML = '';
+    Object.values(state.markets).forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${row.name} <span class="tiny">(${marketMap[row.id] || row.symbol.toUpperCase()})</span></td>
+      <td>${fmtUSD(row.current_price)}</td>
+      <td style="color:${row.price_change_percentage_24h >= 0 ? '#0b7d27' : '#d2163b'}">${fmtPct(row.price_change_percentage_24h)}</td>
+      <td>${fmtUSD(row.market_cap)}</td>`;
+      tbody.appendChild(tr);
+    });
+    updateTicker();
+  }
+
+  function updateTicker(){
+    const line = Object.values(state.markets).slice(0,4).map(r => `${marketMap[r.id]||r.symbol.toUpperCase()} ${fmtUSD(r.current_price)} ${fmtPct(r.price_change_percentage_24h)}`).join('  •  ');
+    document.getElementById('connState').textContent = line || 'Live crypto + SEC feeds';
+  }
+
+  async function loadAssetChart(){
+    const asset = document.getElementById('chartAsset').value;
+    const days = document.getElementById('chartWindow').value;
+    state.selectedChart = asset;
+    log(`Loading chart for ${asset} (${days} days).`, 'action');
+    try {
+      const res = await trackedFetch(`https://api.coingecko.com/api/v3/coins/${asset}/market_chart?vs_currency=usd&days=${days}`, 'CoinGecko chart');
+      const json = await res.json();
+      const points = json.prices || [];
+      drawSeries(document.getElementById('assetChart'), points.map(p => p[1]), '#ff4fd8');
+      if(points.length){
+        const vals = points.map(p=>p[1]);
+        const last = vals.at(-1);
+        const min = Math.min(...vals), max = Math.max(...vals);
+        const delta = ((last - vals[0]) / vals[0]) * 100;
+        document.getElementById('chartLast').textContent = fmtUSD(last);
+        document.getElementById('chartRange').textContent = `${fmtUSD(min)} – ${fmtUSD(max)}`;
+        document.getElementById('chartDelta').textContent = fmtPct(delta);
+        document.getElementById('chartDelta').style.color = delta >=0 ? '#0b7d27' : '#d2163b';
+      }
+    } catch(err){
+      log(`Chart load failed: ${err.message}`, 'error');
+    }
+  }
+
+  function drawSeries(canvas, values, accent='#4fd8ff'){
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = '#dadbe3'; ctx.lineWidth = 1;
+    for(let i=0;i<5;i++){
+      const y = 20 + i * ((H-40)/4);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+    if(!values || values.length < 2){
+      ctx.fillStyle = '#444'; ctx.font = '16px monospace'; ctx.fillText('No live series loaded.', 20, H/2); return;
+    }
+    const min = Math.min(...values), max = Math.max(...values);
+    const pad = 18;
+    ctx.beginPath();
+    values.forEach((v, i) => {
+      const x = pad + (i/(values.length-1))*(W-pad*2);
+      const y = H-pad - ((v-min)/(Math.max(1e-9,max-min)))*(H-pad*2);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // fill gradient
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, 'rgba(255,79,216,0.32)');
+    grad.addColorStop(1, 'rgba(79,216,255,0.04)');
+    ctx.lineTo(W-pad,H-pad); ctx.lineTo(pad,H-pad); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+  }
+
+  function revaluePortfolio(){
+    let total = 0, pnl = 0;
+    const tbody = document.getElementById('positionsRows');
+    tbody.innerHTML = '';
+    state.positions.forEach(pos => {
+      const mkt = state.markets[pos.asset];
+      const now = mkt?.current_price ?? pos.avg;
+      const value = now * pos.qty;
+      const p = (now - pos.avg) * pos.qty;
+      total += value; pnl += p;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${marketMap[pos.asset] || pos.asset}</td><td>${pos.qty.toFixed(4)}</td><td>${fmtUSD(pos.avg)}</td><td>${fmtUSD(now)}</td><td style="color:${p>=0?'#0b7d27':'#d2163b'}">${fmtUSD(p)}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('acctValue').textContent = fmtUSD(total);
+    const pnlNode = document.getElementById('acctPnl');
+    pnlNode.textContent = fmtUSD(pnl);
+    pnlNode.style.color = pnl >= 0 ? '#0b7d27' : '#d2163b';
+    state.equityHistory.push({t:Date.now(),v:total,p:pnl});
+    state.equityHistory = state.equityHistory.slice(-200);
+    savePositions();
+    drawSeries(document.getElementById('equityCurve'), state.equityHistory.map(x => x.v), '#4fd8ff');
+  }
+
+  function approveTrade(){
+    const asset = document.getElementById('tradeAsset').value;
+    const side = document.getElementById('tradeSide').value;
+    const qty = Number(document.getElementById('tradeQty').value);
+    const reason = document.getElementById('tradeReason').value.trim();
+    const px = state.markets[asset]?.current_price;
+    if(!px){ log('Approval blocked: no live price available.', 'error'); return; }
+    if(!(qty > 0)){ log('Approval blocked: quantity must be positive.', 'error'); return; }
+    if(!reason){ log('Approval blocked: thesis is required.', 'error'); return; }
+
+    if(side === 'buy'){
+      const existing = state.positions.find(p => p.asset === asset);
+      if(existing){
+        const newQty = existing.qty + qty;
+        existing.avg = ((existing.avg * existing.qty) + (px * qty)) / newQty;
+        existing.qty = newQty;
+      } else {
+        state.positions.push({asset, qty, avg:px});
+      }
+      log(`Supervising Quant approved BUY ${qty} ${marketMap[asset]||asset} at ${fmtUSD(px)}. Thesis: ${reason}`, 'ok');
+    } else {
+      const existing = state.positions.find(p => p.asset === asset);
+      if(!existing || existing.qty < qty){
+        log('Approval blocked: sell quantity exceeds current paper inventory.', 'error');
+        return;
+      }
+      existing.qty -= qty;
+      if(existing.qty <= 0) state.positions = state.positions.filter(p => p !== existing);
+      log(`Supervising Quant approved SELL ${qty} ${marketMap[asset]||asset} at ${fmtUSD(px)}. Thesis: ${reason}`, 'ok');
+    }
+    revaluePortfolio();
+  }
+
+  async function ensureSubmissionsIndex(){
+    if(state.submissionsIndex) return state.submissionsIndex;
+    setFeedStatus('sec', 'loading', 40);
+    log('Loading SEC ticker-to-CIK index...', 'action');
+    const res = await trackedFetch('https://www.sec.gov/files/company_tickers.json', 'SEC ticker index', {headers:{'Accept':'application/json'}});
+    const json = await res.json();
+    const map = {};
+    Object.values(json).forEach(x => { map[x.ticker.toUpperCase()] = x; });
+    state.submissionsIndex = map;
+    setFeedStatus('sec', 'healthy', 70);
+    return map;
+  }
+
+  async function lookupSEC(){
+    const ticker = document.getElementById('tickerInput').value.trim().toUpperCase();
+    if(!ticker) return;
+    try{
+      const idx = await ensureSubmissionsIndex();
+      const rec = idx[ticker];
+      if(!rec){
+        log(`SEC lookup failed: ${ticker} not found in ticker index.`, 'error');
+        return;
+      }
+      const cik = String(rec.cik_str).padStart(10, '0');
+      document.getElementById('secName').textContent = rec.title;
+      document.getElementById('secCik').textContent = cik;
+      document.getElementById('secExchange').textContent = ticker;
+
+      const subRes = await trackedFetch(`https://data.sec.gov/submissions/CIK${cik}.json`, 'SEC submissions', {headers:{'Accept':'application/json'}});
+      const sub = await subRes.json();
+      const factsRes = await trackedFetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`, 'SEC company facts', {headers:{'Accept':'application/json'}});
+      const facts = await factsRes.json();
+      const list = document.getElementById('secFacts');
+      list.innerHTML = '';
+      const filings = sub?.filings?.recent;
+      const form = filings?.form?.[0] || '--';
+      const filed = filings?.filingDate?.[0] || '--';
+      const acc = filings?.accessionNumber?.[0] || '--';
+      const documentCount = filings?.form?.length || 0;
+      [
+        `Most recent form: ${form}`,
+        `Filing date: ${filed}`,
+        `Accession: ${acc}`,
+        `Recent filing rows loaded: ${documentCount}`
+      ].forEach(text => {
+        const div = document.createElement('div'); div.textContent = text; list.appendChild(div);
+      });
+      const usGaap = facts?.facts?.['us-gaap'] || {};
+      const keys = ['Assets','Liabilities','NetIncomeLoss','Revenues'];
+      keys.forEach(k => {
+        const metric = usGaap[k];
+        if(metric){
+          const unitKey = Object.keys(metric.units || {})[0];
+          const datapoint = unitKey ? metric.units[unitKey].at(-1) : null;
+          if(datapoint){
+            const div = document.createElement('div');
+            div.textContent = `${k}: ${Number(datapoint.val).toLocaleString()} (${datapoint.fy || datapoint.frame || 'reported'})`;
+            list.appendChild(div);
+          }
+        }
+      });
+      setFeedStatus('sec', 'healthy', 100);
+      log(`SEC company facts loaded for ${ticker}.`, 'ok');
+    }catch(err){
+      setFeedStatus('sec', 'error', 100);
+      log(`SEC lookup error: ${err.message}`, 'error');
+    }
+  }
+
+  function fillAssetSelectors(){
+    const assets = marketIds.map(id => `<option value="${id}">${marketMap[id]} / ${id}</option>`).join('');
+    document.getElementById('tradeAsset').innerHTML = assets;
+    document.getElementById('chartAsset').innerHTML = assets;
+  }
+
+  function bindDesktop(){
+    let drag = null;
+    document.querySelectorAll('.window').forEach(win => {
+      const bar = win.querySelector('.titlebar');
+      bar.addEventListener('pointerdown', e => {
+        if(e.target.closest('.ctrl')) return;
+        drag = {
+          el: win,
+          x: e.clientX,
+          y: e.clientY,
+          left: parseInt(win.style.left,10),
+          top: parseInt(win.style.top,10)
+        };
+        state.z += 1; win.style.zIndex = state.z;
+        bar.setPointerCapture(e.pointerId);
+      });
+      bar.addEventListener('pointermove', e => {
+        if(!drag || drag.el !== win) return;
+        win.style.left = `${Math.max(0, drag.left + (e.clientX - drag.x))}px`;
+        win.style.top = `${Math.max(40, drag.top + (e.clientY - drag.y))}px`;
+      });
+      bar.addEventListener('pointerup', () => drag = null);
+      win.addEventListener('mousedown', () => { state.z += 1; win.style.zIndex = state.z; });
+      const minBtn = win.querySelector('[data-min]');
+      minBtn.addEventListener('click', () => {
+        const c = win.querySelector('.content');
+        c.style.display = c.style.display === 'none' ? '' : 'none';
+      });
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      Object.entries(defaultLayouts).forEach(([key,val]) => {
+        const win = document.querySelector(`.window[data-key="${key}"]`);
+        Object.assign(win.style, val);
+      });
+      log('Layout reset to original window positions.', 'user');
+    });
+  }
+
+  document.getElementById('approveTradeBtn').addEventListener('click', approveTrade);
+  document.getElementById('clearLogBtn').addEventListener('click', () => {
+    document.getElementById('activityFeed').innerHTML = '';
+    log('Activity log cleared.', 'user');
+  });
+  document.getElementById('refreshBtn').addEventListener('click', async () => {
+    await refreshMarkets();
+    await loadAssetChart();
+    log('Manual refresh finished.', 'ok');
+  });
+  document.getElementById('lookupTickerBtn').addEventListener('click', lookupSEC);
+  document.getElementById('loadChartBtn').addEventListener('click', loadAssetChart);
+
+  fillAssetSelectors();
+  bindDesktop();
+  log('Desk initialized. No mock data. Live crypto and SEC windows available.', 'ok');
+  refreshMarkets();
+  loadAssetChart();
+  revaluePortfolio();
+  setInterval(refreshMarkets, 60000);
+})();
+</script>
+</body>
+</html>
